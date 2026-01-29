@@ -1,0 +1,60 @@
+---
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '#heritage', label: 'Our Heritage' },
+  { href: '#products', label: 'Products' },
+  { href: '#contact', label: 'Contact' },
+];
+---
+
+<nav class="site-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-wrapper">
+      <div class="nav-left">
+        <a class="logo" href="/">
+          <img class="logo-img" src="/logo.png" alt="Romana logo" />
+        </a>
+      </div>
+
+    <!-- Mobile toggle -->
+    <button class="nav-toggle" aria-controls="primary-navigation" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="hamburger" aria-hidden></span>
+    </button>
+
+    <div class="nav-center">
+      <ul id="primary-navigation" class="nav-list">
+        {navItems.map(item => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="nav-actions" aria-hidden>
+      <!-- simple cart icon -->
+      <a class="cart" href="#" aria-label="Cart">
+        <!-- simpler filled cart icon to avoid outline/dashed effects -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+          <path d="M7 4h-2l-1 2h2l2.6 7.59-1.35 2.45A1 1 0 0 0 8.2 17h9.45a1 1 0 0 0 .92-.62L21 8H6.21" />
+          <circle cx="10" cy="20" r="1.25" />
+          <circle cx="18" cy="20" r="1.25" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Small client-side script to toggle mobile menu -->
+<script>
+  (function(){
+    try{
+      const btn = document.querySelector('.nav-toggle');
+      const wrapper = document.querySelector('.nav-wrapper');
+      const nav = document.getElementById('primary-navigation');
+      if (!btn || !wrapper) return;
+      btn.addEventListener('click', function(){
+        const isOpen = wrapper.classList.toggle('open');
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        if (nav) nav.setAttribute('data-open', isOpen ? 'true' : 'false');
+      });
+    }catch(e){/* silent */}
+  })();
+</script>

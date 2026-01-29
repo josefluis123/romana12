@@ -1,0 +1,108 @@
+---
+// Simple split hero carousel.
+// Images: place files in /public and update the `images` array if needed.
+const images = [
+  '/background.jpeg',
+  '/carousell_2.png',
+];
+
+const slides = [
+  {
+    title: 'The Original\nPhilippine Peanut\nBrittle',
+    subtitle: 'Classic recipe since 1956.',
+    cta: { href: '#heritage', label: 'Learn More' }
+  },
+  {
+    title: 'Handmade\nSmall Batches',
+    subtitle: 'Carefully roasted peanuts and caramel.',
+    cta: { href: '#products', label: 'Our Products' }
+  }
+];
+---
+
+<section class="hero-split" aria-label="Hero carousel">
+  <div class="carousel" data-carousel>
+    {images.map((src, i) => (
+      <div class="slide" data-index={i} style={`background-image: url('${src}')`} aria-hidden={i !== 0}></div>
+    ))}
+
+    <button class="carousel-prev" aria-label="Previous slide">‹</button>
+    <button class="carousel-next" aria-label="Next slide">›</button>
+  </div>
+
+  <div class="hero-text" data-text>
+    {slides.map((s, i) => (
+      <div class="text-slide" data-index={i} aria-hidden={i !== 0}>
+        <h1 class="hero-title">{s.title.replace(/\\n/g, '<br/>')}</h1>
+        <p class="hero-sub">{s.subtitle}</p>
+        <a class="btn-orange" href={s.cta.href}>{s.cta.label}</a>
+      </div>
+    ))}
+  </div>
+
+  <script>
+    // Small, self-contained carousel script.
+    document.addEventListener('DOMContentLoaded', () => {
+      (function(){
+        // Find the parent section element (hero-split)
+        const root = document.querySelector('.hero-split');
+        
+        if (!root) {
+          console.error('Root element not found');
+          return;
+        }
+
+        const carousel = root.querySelector('[data-carousel]');
+        const slidesEls = carousel ? Array.from(carousel.querySelectorAll('.slide')) : [];
+        const prev = carousel && carousel.querySelector('.carousel-prev');
+        const next = carousel && carousel.querySelector('.carousel-next');
+        const textRoot = root.querySelector('[data-text]');
+        const textSlides = textRoot ? Array.from(textRoot.querySelectorAll('.text-slide')) : [];
+        
+        console.log('carousel found:', !!carousel);
+        console.log('slidesEls:', slidesEls.length);
+        console.log('prev found:', !!prev);
+        console.log('next found:', !!next);
+        console.log('textSlides:', textSlides.length);
+        
+        let idx = 0;
+        const len = Math.max(slidesEls.length, textSlides.length);
+
+        function show(i){
+          console.log('show called with', i, 'current idx', idx);
+          idx = (i + len) % len;
+          console.log('new idx', idx);
+          
+          slidesEls.forEach((el, j) => { 
+            el.style.opacity = j === idx ? '1' : '0'; 
+            el.setAttribute('aria-hidden', String(j !== idx)); 
+          });
+          
+          textSlides.forEach((el, j) => { 
+            el.style.display = j === idx ? 'block' : 'none'; 
+            el.setAttribute('aria-hidden', String(j !== idx)); 
+          });
+        }
+
+        if (prev) prev.addEventListener('click', () => show(idx - 1));
+        if (next) next.addEventListener('click', () => show(idx + 1));
+
+        // autoplay
+        let timer = setInterval(() => show(idx + 1), 5000);
+        
+        [carousel, root].forEach(node => {
+          if (node) {
+            node.addEventListener('mouseenter', () => clearInterval(timer));
+            node.addEventListener('mouseleave', () => { 
+              clearInterval(timer); 
+              timer = setInterval(() => show(idx + 1), 5000); 
+            });
+          }
+        });
+
+        // init
+        show(0);
+      })();
+    });
+  </script>
+</section>
