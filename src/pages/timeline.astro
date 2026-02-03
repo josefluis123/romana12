@@ -1,0 +1,166 @@
+---
+import Navbar from '../components/Navbar.astro';
+const title = 'Our Heritage - Timeline';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Koulen&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <Navbar />
+    <header class="timeline-hero">
+      <div class="hero-inner">
+        <h1 class="hero-title">OUR HERITAGE</h1>
+        <p class="hero-sub">From family kitchen to every table — a bold, crunchy story.</p>
+      </div>
+    </header>
+
+    <main class="timeline-page">
+      <section class="timeline-intro">
+        <p class="lead">A quick, colorful tour through the milestones that shaped Romana.</p>
+      </section>
+
+      <div class="timeline-grid">
+        <section class="timeline-list">
+          <div class="timeline-line" aria-hidden></div>
+          <!-- floating peanut marker that follows the timeline-line -->
+          <img id="timeline-marker" src="/peanut1.png" alt="" aria-hidden="true" />
+
+        <article class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <time>1950s</time>
+            <h3>Kitchen Beginnings</h3>
+            <p>Family recipes and small-batch brittle making begins in a humble kitchen.</p>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <time>1970s</time>
+            <h3>Shop Opens</h3>
+            <p>A tiny shop opens and local popularity grows due to its distinctive crunchy texture.</p>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <time>1990s</time>
+            <h3>Regional Reach</h3>
+            <p>Distribution expands across islands, carrying traditional flavors far and wide.</p>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <time>2010s</time>
+            <h3>New Lines</h3>
+            <p>Online orders start and new product lines (spreads, gift tins) are introduced.</p>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <time>Today</time>
+            <h3>Artisanal & Modern</h3>
+            <p>Continuing tradition with artisanal care — bringing heritage to the modern table.</p>
+          </div>
+        </article>
+
+        </section>
+
+        <aside class="timeline-side" id="timeline-side" aria-hidden="true"></aside>
+      </div>
+
+      <p class="back-home">Back to <a href="/">Home</a></p>
+    </main>
+
+    <script>
+      // Move the marker to whichever timeline dot is nearest the viewport center.
+      document.addEventListener('DOMContentLoaded', () => {
+        const items = Array.from(document.querySelectorAll('.timeline-item'));
+        const marker = document.getElementById('timeline-marker');
+        const list = document.querySelector('.timeline-list');
+        if (!items.length || !marker || !list) return;
+
+        let ticking = false;
+
+        const side = document.getElementById('timeline-side');
+        const availableImages = ['/brittle1.png','/peanut1.png','/products.png','/p_brittle.png','/logo.png'];
+        let stackCount = 0;
+
+        function addSideImage(){
+          const img = document.createElement('img');
+          const src = availableImages[Math.floor(Math.random()*availableImages.length)];
+          img.src = src;
+          img.className = 'side-image';
+          // absolutely position inside the sticky side so images overlap and stack
+          img.style.position = 'absolute';
+          img.style.right = '12px';
+          // stack from the bottom upward
+          const bottomOffset = stackCount * 20;
+          img.style.bottom = bottomOffset + 'px';
+          img.style.zIndex = 30 + stackCount;
+          img.style.transform = `scale(${1 - stackCount*0.03}) rotate(${(Math.random()-0.5)*6}deg)`;
+          img.style.transition = 'transform 420ms cubic-bezier(.2,.9,.28,1), bottom 420ms ease, opacity 420ms ease';
+          side.appendChild(img);
+          stackCount = Math.min(12, stackCount + 1);
+        }
+
+        function update(){
+          ticking = false;
+          const listRect = list.getBoundingClientRect();
+          const viewportCenter = window.innerHeight / 2;
+          let minDist = Infinity;
+          let closest = items[0];
+
+          for (const item of items){
+            const dot = item.querySelector('.timeline-dot');
+            const dotRect = dot.getBoundingClientRect();
+            const dotCenterViewportY = dotRect.top + (dotRect.height / 2);
+            const dist = Math.abs(dotCenterViewportY - viewportCenter);
+            if (dist < minDist){ minDist = dist; closest = item; }
+
+            // reveal when near center
+            const revealThreshold = window.innerHeight * 0.45;
+            if (dist < revealThreshold) {
+              if (!item.classList.contains('reveal')){
+                // first time reveal: add a side image
+                addSideImage();
+              }
+              item.classList.add('reveal');
+            }
+          }
+
+          const dot = closest.querySelector('.timeline-dot');
+          const dotRect = dot.getBoundingClientRect();
+          const line = list.querySelector('.timeline-line');
+          const lineRect = line.getBoundingClientRect();
+
+          const top = dotRect.top - listRect.top + (dotRect.height/2) - (marker.offsetHeight/2);
+          const left = lineRect.left - listRect.left + (lineRect.width / 2);
+          marker.style.left = left + 'px';
+          marker.style.top = Math.max(8, Math.min(list.clientHeight - marker.offsetHeight - 8, top)) + 'px';
+          marker.classList.add('active');
+        }
+
+        function schedule(){ if (!ticking){ ticking = true; requestAnimationFrame(update); } }
+
+        window.addEventListener('scroll', schedule, { passive: true });
+        window.addEventListener('resize', schedule);
+
+        // initial placement
+        schedule();
+      });
+    </script>
+  </body>
+</html>
