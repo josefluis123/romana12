@@ -3,7 +3,6 @@
 // Images: place files in /public and update the `images` array if needed.
 const images = [
   '/background.jpeg',
-  '/carousell_2.png',
 ];
 
 const slides = [
@@ -12,11 +11,7 @@ const slides = [
     subtitle: 'Classic recipe since 1956.',
     cta: { href: '#heritage', label: 'Learn More' }
   },
-  {
-    title: 'Handmade\nSmall Batches',
-    subtitle: 'Carefully roasted peanuts and caramel.',
-    cta: { href: '#products', label: 'Our Products' }
-  }
+
 ];
 ---
 
@@ -35,7 +30,6 @@ const slides = [
       <div class="text-slide" data-index={i} aria-hidden={i !== 0}>
         <h1 class="hero-title">{s.title.replace(/\\n/g, '<br/>')}</h1>
         <p class="hero-sub">{s.subtitle}</p>
-        <a class="btn-orange" href={s.cta.href}>{s.cta.label}</a>
       </div>
     ))}
   </div>
@@ -105,4 +99,51 @@ const slides = [
       })();
     });
   </script>
+      <script>
+        // Scroll-driven crossfade between hero and our-story
+        document.addEventListener('DOMContentLoaded', () => {
+          const hero = document.querySelector('.hero-split');
+          const story = document.querySelector('.our-story');
+          if (!hero || !story) return;
+
+          // Helper: easeOutCubic for natural feeling
+          function ease(t){ return 1 - Math.pow(1 - t, 3); }
+
+          let ticking = false;
+          function update(){
+            ticking = false;
+            // viewport metrics
+            const vh = window.innerHeight || document.documentElement.clientHeight;
+
+            // compute distance between hero bottom and story top
+            const heroRect = hero.getBoundingClientRect();
+            const storyRect = story.getBoundingClientRect();
+
+            // Start transition when story top enters bottom half of viewport
+            const start = vh * 0.55; // when story.top <= start, begin
+            const end = vh * 0.15;   // when story.top <= end, finish
+
+            let raw = (start - storyRect.top) / (start - end);
+            raw = Math.max(0, Math.min(1, raw));
+            const eased = ease(raw);
+
+            // update CSS variables (0..1)
+            hero.style.setProperty('--hero-progress', String(eased));
+            // only apply story progress when there's a visible transition to avoid hiding it on initial load
+            if (eased > 0.001) {
+              story.style.setProperty('--story-progress', String(eased));
+            } else {
+              // remove inline var so default visible styles remain
+              story.style.removeProperty('--story-progress');
+            }
+          }
+
+          function onScroll(){ if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+
+          window.addEventListener('scroll', onScroll, { passive: true });
+          window.addEventListener('resize', onScroll);
+          // initial update
+          requestAnimationFrame(update);
+        });
+      </script>
 </section>

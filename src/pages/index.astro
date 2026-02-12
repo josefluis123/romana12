@@ -17,9 +17,28 @@ import HeroCarousel from '../components/HeroCarousel.astro';
     <Navbar />
     <main>
   <HeroCarousel />
-  <img src="/brittle1.png" class="split-image" alt="Brittle" />
-  <img src="/peanut1.png" class="split-image-right" alt="Peanut" />
-  <section class="next-section">
+
+      <section class="our-story">
+     
+        <div class="container">
+          <h3>Romana Devera</h3>
+          <div class="story-grid">
+            <p class="story-intro">HOW IT ALL BEGAN</p>
+            <div class="story-image">
+              <img src="/image%209.png" alt="Romana" />
+            </div>
+            <div class="story-text">
+              <p>What started as a small family recipe has grown into Romana — hand-crafted brittle and snacks made with simple ingredients and a lot of heart. We source quality peanuts and nuts, then cook them slowly to achieve the perfect crunch and caramelized flavor.</p>
+              <p>Our mission is to share those flavors with friends and neighbors while supporting local producers.</p>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod, nisl at convallis tincidunt, justo arcu cursus elit, id luctus nunc nisl sed orci. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec a facilisis lectus.</p>
+              <p>Curabitur sit amet nibh sed justo fermentum malesuada. Sed vitae mi sit amet urna pharetra gravida. Phasellus ut sem vitae augue faucibus gravida. Aliquam erat volutpat. Maecenas in dui sed urna consequat tincidunt.</p>
+              <!-- removed CTA as requested -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    <section class="next-section">
     <div>
       <h2>Products By</h2>
       <img src="/logo.png" alt="Romana Logo" />
@@ -37,39 +56,39 @@ import HeroCarousel from '../components/HeroCarousel.astro';
     <div id="falling-root" aria-hidden="true"></div>
   </section>
 
-  <section class="featured-products">
-    <div class="container">
-      <h3>Featured Products</h3>
-      <div class="product-viewport">
-        <div class="product-track">
+    <section class="featured-products">
+      <div class="container">
+        <h3>Featured Products</h3>
+        <div class="product-grid">
           <article class="product-card">
-            <img src="/products.png" alt="Classic Peanut Brittle" />
-            <h4>Classic Peanut Brittle</h4>
-            <p>Crunchy, caramel-coated peanuts in every bite.</p>
-            <a class="btn-brittle" href="#products">View</a>
+            <img src="/products/chicha_pop.jpeg" alt="Chicha Pop" />
+            <div class="product-content">
+              <h4>Chicha Pop</h4>
+              <p>A crunchy sweet snack with a caramelized finish.</p>
+              <a class="btn-brittle" href="#products">View</a>
+            </div>
           </article>
           <article class="product-card">
-            <img src="/brittle1.png" alt="Handmade Small Batches" />
-            <h4>Handmade Small Batches</h4>
-            <p>Carefully roasted peanuts, small-batch care.</p>
-            <a class="btn-brittle" href="#products">View</a>
+            <img src="/products/r_cocoa.jpeg" alt="Cocoa" />
+            <div class="product-content">
+              <h4>Cocoa</h4>
+              <p>Rich cocoa-infused brittle for chocolate lovers.</p>
+              <a class="btn-brittle" href="#products">View</a>
+            </div>
           </article>
           <article class="product-card">
-            <img src="/peanut1.png" alt="Peanut Spread" />
-            <h4>Peanut Spread</h4>
-            <p>Rich, buttery peanut spread for toast and more.</p>
-            <a class="btn-brittle" href="#products">View</a>
+            <img src="/products/cashew_adobo.jpeg" alt="Cashew Adobo" />
+            <div class="product-content">
+              <h4>Cashew Adobo</h4>
+              <p>Savory cashew snack inspired by adobo flavors.</p>
+              <a class="btn-brittle" href="#products">View</a>
+            </div>
           </article>
-          <article class="product-card">
-            <img src="/products/peanut%20butter.png" alt="Peanut Butter" />
-            <h4>Peanut Butter</h4>
-            <p>Creamy, all-natural peanut butter made from roasted peanuts.</p>
-            <a class="btn-brittle" href="#products">View</a>
-          </article>
+          <!-- if you want a placeholder fourth card, add it here -->
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -189,56 +208,54 @@ import HeroCarousel from '../components/HeroCarousel.astro';
       const track = document.querySelector('.product-track');
       if (!viewport || !track) return;
 
+      // Smooth sliding carousel using clones for infinite loop
       const originals = Array.from(track.children);
       const originalsLen = originals.length;
       if (originalsLen === 0) return;
 
-      // clone nodes before and after
+  // create clones at both ends
+  // compute gap in pixels reliably
+  const gapStyle = getComputedStyle(track).gap || '0px';
+  const gapPx = Math.round(parseFloat(gapStyle)) || 0;
+
       const clonesBefore = originals.map(node => node.cloneNode(true));
       const clonesAfter = originals.map(node => node.cloneNode(true));
-
-      // append/prepend clones
       clonesBefore.reverse().forEach(n => track.insertBefore(n, track.firstChild));
       clonesAfter.forEach(n => track.appendChild(n));
 
-      // all cards reference
-      const cards = Array.from(track.children);
+      let cards = Array.from(track.children);
+      let isAnimating = false;
+      let index = originalsLen; // start at first original
 
-      // ensure layout styles
-      track.style.display = 'flex';
-      track.style.gap = '1.25rem';
-      track.style.transition = 'transform 600ms ease';
-
-      // helpers
       function cardStep(){
+        // refresh cards and measure first card width (px) + gapPx
+        cards = Array.from(track.children);
+        if (!cards.length) return 0;
         const rect = cards[0].getBoundingClientRect();
-        const style = getComputedStyle(cards[0]);
-        const marginRight = parseFloat(style.marginRight) || 0;
-        return rect.width + marginRight;
+        return Math.round(rect.width + gapPx);
       }
 
-      let index = originalsLen; // start at the first original
-      let isAnimating = false; // lock while animating
-
       function setInstant(i){
+        const step = cardStep();
         track.style.transition = 'none';
-        track.style.transform = `translateX(-${i * cardStep()}px)`;
-        // force reflow then re-enable transition
+        track.style.transform = `translateX(-${i * step}px)`;
+        // force reflow
         void track.offsetWidth;
         track.style.transition = 'transform 600ms ease';
       }
 
       function slideTo(i){
-        if (isAnimating) return; // ignore rapid clicks
+        if (isAnimating) return;
         isAnimating = true;
-        track.style.transform = `translateX(-${i * cardStep()}px)`;
+        const step = cardStep();
+        const px = Math.round(i * step);
+        track.style.transform = `translateX(-${px}px)`;
         index = i;
       }
 
-      // initial position
+      // initial pos
       setInstant(index);
 
-      // next/prev with snapping
       function next(){ slideTo(index + 1); }
       function prev(){ slideTo(index - 1); }
 
@@ -260,16 +277,16 @@ import HeroCarousel from '../components/HeroCarousel.astro';
       btnPrev.addEventListener('click', prev);
       btnNext.addEventListener('click', next);
 
-      // when transition ends, detect if we're in a cloned area and snap back
+      // when transition ends, snap if we crossed clones
       track.addEventListener('transitionend', (e) => {
-        // only handle transform transitions
         if (e.propertyName !== 'transform') return;
-
+        // refresh card refs in case layout changed
+        cards = Array.from(track.children);
         // if moved past the originals on the right
         if (index >= originalsLen * 2) {
           index = originalsLen;
           setInstant(index);
-          // small timeout to ensure setInstant applied before unlocking
+          // small unlock
           setTimeout(() => { isAnimating = false; }, 20);
           return;
         }
@@ -280,18 +297,17 @@ import HeroCarousel from '../components/HeroCarousel.astro';
           setTimeout(() => { isAnimating = false; }, 20);
           return;
         }
-
-        // normal end of slide
         isAnimating = false;
       });
 
-      // resize handling
+      // resize: recompute step and reset position
       let resizeTimer;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
-        // wait for layout to settle
-        resizeTimer = setTimeout(() => setInstant(index), 120);
+        resizeTimer = setTimeout(() => { cards = Array.from(track.children); setInstant(index); }, 120);
       });
+
+  // autoplay removed — manual controls only
 
       // optional: keyboard navigation
       viewport.addEventListener('keydown', (e) => {

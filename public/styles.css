@@ -33,14 +33,24 @@ p{margin:0.5rem 0}
 
 /* Navbar styles */
 .site-nav{
-	position:fixed;
-	top: 25px;
-	left:0;
-	right:0;
-	z-index: 3;
+    position:fixed;
+    top: 25px;
+    left:0;
+    right:0;
+    /* ensure navbar is the top-most layer */
+    z-index: 9999;
 	/* add comfortable spacing from the top and respect notch/safe-area */
 	padding-top: calc(0.6rem + env(safe-area-inset-top));
 	padding-bottom: 0.35rem;
+}
+/* Auto-hide navbar when pointer is idle */
+.site-nav {
+    transition: transform 320ms ease, opacity 320ms ease;
+}
+.site-nav.nav-hidden{
+    transform: translateY(-110%);
+    opacity: 0;
+    pointer-events: none;
 }
 .nav-container{
 	display:flex;
@@ -100,7 +110,7 @@ p{margin:0.5rem 0}
 
 /* Featured products */
 .featured-products {
-    background: #f8f6f2;
+    background: #ffffff;
     padding: 3rem 1.25rem;
 }
 .featured-products .container { max-width: 1100px; margin: 0 auto; }
@@ -113,17 +123,32 @@ p{margin:0.5rem 0}
 }
 .product-grid {
     display: grid;
+    /* use three columns for the featured products grid */
     grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
 }
 .product-card {
-    background: #fff;
+    /* match the featured section background for lower contrast */
+    background: rgba(248,246,242,0.98); /* close to #f8f6f2 */
     padding: 1rem;
-    border-radius: 12px;
+    border-radius: 10px;
     text-align: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    border: 1px solid rgba(11,11,11,0.03);
+    color: #2b2b2b;
     position: relative;
     transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+/* make card contents stretch vertically so CTAs align */
+.product-card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.product-card .btn-brittle{
+    margin-top: auto; /* push to bottom */
 }
 .product-card img {
     max-width: 100%;
@@ -132,11 +157,13 @@ p{margin:0.5rem 0}
     border-radius: 8px;
 }
 .product-card h4 {
-    margin: 0.75rem 0 0.5rem 0;
-    font-size: 1.05rem;
+    margin: 0.6rem 0 0.4rem 0;
+    font-size: 1rem;
     color: #6B4301;
-    font-family: 'Koulen', sans-serif;
-    text-transform: uppercase;
+    /* use the site font for body-level headings so the section title (Koulen) remains dominant */
+    font-family: inherit;
+    font-weight: 600;
+    text-transform: none;
 }
 .product-card p { color: #444; font-size: 0.95rem; margin: 0 0 0.75rem 0; }
 
@@ -150,8 +177,130 @@ p{margin:0.5rem 0}
     max-width: calc((100% - 2.5rem) / 3);
 }
 
+/* Featured section uses a full-width carousel: one product per slide */
+.featured-products .product-track { gap: 0; }
+.featured-products .product-card { flex: 0 0 100%; max-width: 100%; box-sizing: border-box; }
+.featured-products .product-viewport { overflow: hidden; }
+.featured-products .product-track { align-items: center; }
+.featured-products .product-card img { height: 340px; object-fit: cover; }
+
+/* Make featured product content layout similar to .next-section brittle-text */
+.featured-products .product-card { display: flex; flex-direction: row; gap: 1.25rem; align-items: center; padding: 1.5rem; }
+.featured-products .product-card img { flex: 0 0 36%; max-width: 36%; width:100%; height: auto; border-radius: 10px; }
+.featured-products .product-content { flex: 1 1 64%; display: flex; flex-direction: column; align-items: flex-start; }
+.featured-products .product-content h4 { font-family: 'Koulen', sans-serif; font-size: 2rem; color: #6B4301; margin: 0 0 0.5rem 0; text-transform: uppercase; }
+.featured-products .product-content p { color: #333; font-size: 1.05rem; margin: 0 0 1rem 0; }
+.featured-products .product-content .btn-brittle { align-self: flex-start; }
+
+/* make featured product cards fully flush with the section */
+.featured-products .product-card {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
 @media (max-width: 900px){
   .product-card { flex: 0 0 90%; max-width: 90%; }
+}
+
+/* Our Story section */
+.our-story {
+    padding: 3rem 1.25rem;
+    position: relative;
+    /* make the section span the full viewport height */
+    min-height: 100vh;
+    display: grid;
+    /* keep heading at the top (like other sections) while story text is centered on the right */
+    align-items: start;
+    /* image will be an inline element (.story-image) instead of a CSS background */
+    background: #fff;
+    color: #4b4444;
+    overflow: visible; /* allow overlap during transition */
+}
+.our-story::before{ display:none; }
+.our-story .container { max-width: 1100px; margin: 0 auto; position: relative; z-index: 2; height: 100%; padding-top: 2.5rem; }
+.our-story h3 { font-family: 'Koulen', sans-serif; font-size: 2rem; color: #4b4444; margin: 0 0 1rem 0; text-transform: uppercase; text-align: center; }
+
+/* Ensure the heading sits above the absolutely positioned story text */
+.our-story h3 { position: relative; z-index: 2; }
+.story-grid {
+    display: grid;
+    /* narrower left column so the photo appears smaller */
+    grid-template-columns: 48% 1fr;
+    gap: 2rem;
+    align-items: center;
+    min-height: 60vh;
+}
+/* our-story controlled via --story-progress variable (0..1) where 0 is hidden and 1 is fully visible */
+.our-story{
+    /* visible by default; if --story-progress is set by JS it will drive opacity/translate */
+    opacity: 1;
+    transform: none;
+}
+
+/* when JS sets --story-progress, those vars control subtle transition */
+.our-story[style*="--story-progress"] {
+    opacity: calc(var(--story-progress));
+    transform: translateY(calc((1 - var(--story-progress)) * 20px));
+}
+/* Intro line inside story-grid that spans both columns and centers */
+.story-intro {
+    grid-column: 1 / -1; /* span all columns */
+    justify-self: center; /* center horizontally */
+    align-self: center; /* center vertically within grid */
+    margin: 0 0 1rem 0;
+    letter-spacing: 0.06em;
+}
+/* framed photo on the left */
+.story-image {
+    position: static;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 1 / 1; /* keep the container square so the image can be perfectly round */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: transparent;
+    border-radius: 50%; /* make the container round */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    border: none;
+}
+.story-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* ensure the image fills the circular frame */
+    object-position: center center; /* keep subject centered */
+    display: block;
+    border-radius: 50%;
+    transform: scale(1.15); /* slight zoom to fill the circle */
+    transform-origin: center center;
+    transition: transform 300ms ease;
+    will-change: transform;
+}
+
+/* right-side text column */
+.story-text {
+    position: static;
+    max-width: 560px;
+    padding: 1rem 1.25rem;
+    align-self: center;
+    text-align: left;
+    color: #4b4444;
+}
+.story-text p { line-height: 1.6; margin-bottom: 1rem; }
+
+@media (max-width: 900px) {
+    .story-grid { grid-template-columns: 1fr; }
+    /* collapse product grid to a single column on smaller screens */
+    .product-grid { grid-template-columns: 1fr; }
+    /* on small screens keep text left-aligned for readability */
+            .story-text { text-align: left; padding: 0 0.25rem; grid-column: auto; position: static; transform: none; right: auto; top: auto; max-width: none; }
+    .our-story { padding: 2rem 0.75rem; }
+    /* show the image as a normal block above text on mobile */
+    .story-image { position: static; width: 100%; height: auto; }
+    .story-image img { height: auto; }
 }
 
 /* Emphasize middle product card so it appears in front */
@@ -195,6 +344,14 @@ p{margin:0.5rem 0}
 
 /* Split hero carousel styles */
 .hero-split{height:100vh;position:relative}
+/* prepare for runtime scroll-driven transform/opacity changes */
+.hero-split{
+    will-change: transform, opacity;
+    /* progress 0..1 controlled by JS */
+    --hero-progress: 0;
+    opacity: calc(1 - var(--hero-progress));
+    transform: translateY(calc(var(--hero-progress) * -24px));
+}
 .carousel{position:absolute;inset:0;overflow:hidden}
 .slide{position:absolute;inset:0;background-size:cover;background-position:center center;opacity:0;transition:opacity 450ms ease}
 .carousel, .hero-text{min-height:70vh}
@@ -445,6 +602,12 @@ p{margin:0.5rem 0}
     .timeline-line{left:28px;transform:none}
     .timeline-dot{left:28px;transform:none}
     .timeline-list #timeline-marker{left:28px;transform:none}
+}
+
+@media (max-width:900px){
+    .featured-products .product-card { flex-direction: column; }
+    .featured-products .product-card img { flex: 0 0 auto; max-width: 100%; width: 100%; margin-bottom: 0.75rem; }
+    .featured-products .product-content { flex: 1 1 auto; }
 }
 
 /* Grid layout: timeline left/center, sticky images right */
