@@ -1,149 +1,54 @@
 ---
-// Simple split hero carousel.
-// Images: place files in /public and update the `images` array if needed.
-const images = [
-  '/background.jpeg',
-];
-
-const slides = [
-  {
-    title: 'The Original\nPhilippine Peanut\nBrittle',
-    subtitle: 'Classic recipe since 1956.',
-    cta: { href: '#heritage', label: 'Learn More' }
-  },
-
-];
+// Static hero section with background image
+const backgroundImage = '/background.jpeg';
+const title = 'The Origina Philippine Peanut Brittle';
+const subtitle = 'Classic recipe since 1956.';
 ---
 
-<section class="hero-split" aria-label="Hero carousel">
-  <div class="carousel" data-carousel>
-    {images.map((src, i) => (
-      <div class="slide" data-index={i} style={`background-image: url('${src}')`} aria-hidden={i !== 0}></div>
-    ))}
-
-    <button class="carousel-prev" aria-label="Previous slide">‹</button>
-    <button class="carousel-next" aria-label="Next slide">›</button>
-  </div>
-
-  <div class="hero-text" data-text>
-    {slides.map((s, i) => (
-      <div class="text-slide" data-index={i} aria-hidden={i !== 0}>
-        <h1 class="hero-title">{s.title.replace(/\\n/g, '<br/>')}</h1>
-        <p class="hero-sub">{s.subtitle}</p>
-      </div>
-    ))}
+<section class="hero-split" aria-label="Hero section" style={`background-image: url('${backgroundImage}'); background-size: cover; background-position: center;`}>
+  <div class="hero-text">
+    <h1 class="hero-title">{title.replace(/\n/g, '<br/>')}</h1>
+    <p class="hero-sub">{subtitle}</p>
   </div>
 
   <script>
-    // Small, self-contained carousel script.
+    // Scroll-driven fade effect for hero section
     document.addEventListener('DOMContentLoaded', () => {
-      (function(){
-        // Find the parent section element (hero-split)
-        const root = document.querySelector('.hero-split');
-        
-        if (!root) {
-          console.error('Root element not found');
-          return;
-        }
+      const hero = document.querySelector('.hero-split');
+      const story = document.querySelector('.our-story');
+      if (!hero || !story) return;
 
-        const carousel = root.querySelector('[data-carousel]');
-        const slidesEls = carousel ? Array.from(carousel.querySelectorAll('.slide')) : [];
-        const prev = carousel && carousel.querySelector('.carousel-prev');
-        const next = carousel && carousel.querySelector('.carousel-next');
-        const textRoot = root.querySelector('[data-text]');
-        const textSlides = textRoot ? Array.from(textRoot.querySelectorAll('.text-slide')) : [];
-        
-        console.log('carousel found:', !!carousel);
-        console.log('slidesEls:', slidesEls.length);
-        console.log('prev found:', !!prev);
-        console.log('next found:', !!next);
-        console.log('textSlides:', textSlides.length);
-        
-        let idx = 0;
-        const len = Math.max(slidesEls.length, textSlides.length);
+      // Helper: easeOutCubic for natural feeling
+      function ease(t){ return 1 - Math.pow(1 - t, 3); }
 
-        function show(i){
-          console.log('show called with', i, 'current idx', idx);
-          idx = (i + len) % len;
-          console.log('new idx', idx);
-          
-          slidesEls.forEach((el, j) => { 
-            el.style.opacity = j === idx ? '1' : '0'; 
-            el.setAttribute('aria-hidden', String(j !== idx)); 
-          });
-          
-          textSlides.forEach((el, j) => { 
-            el.style.display = j === idx ? 'block' : 'none'; 
-            el.setAttribute('aria-hidden', String(j !== idx)); 
-          });
-        }
+      let ticking = false;
+      function update(){
+        ticking = false;
+        // viewport metrics
+        const vh = window.innerHeight || document.documentElement.clientHeight;
 
-        if (prev) prev.addEventListener('click', () => show(idx - 1));
-        if (next) next.addEventListener('click', () => show(idx + 1));
+        // compute distance between hero bottom and story top
+        const heroRect = hero.getBoundingClientRect();
+        const storyRect = story.getBoundingClientRect();
 
-        // autoplay
-        let timer = setInterval(() => show(idx + 1), 5000);
-        
-        [carousel, root].forEach(node => {
-          if (node) {
-            node.addEventListener('mouseenter', () => clearInterval(timer));
-            node.addEventListener('mouseleave', () => { 
-              clearInterval(timer); 
-              timer = setInterval(() => show(idx + 1), 5000); 
-            });
-          }
-        });
+        // Start transition when story top enters bottom half of viewport
+        const start = vh * 0.55; // when story.top <= start, begin
+        const end = vh * 0.15;   // when story.top <= end, finish
 
-        // init
-        show(0);
-      })();
+        let raw = (start - storyRect.top) / (start - end);
+        raw = Math.max(0, Math.min(1, raw));
+        const eased = ease(raw);
+
+        // update CSS variables (0..1) - only hero is affected, not our-story
+        hero.style.setProperty('--hero-progress', String(eased));
+      }
+
+      function onScroll(){ if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      // initial update
+      requestAnimationFrame(update);
     });
   </script>
-      <script>
-        // Scroll-driven crossfade between hero and our-story
-        document.addEventListener('DOMContentLoaded', () => {
-          const hero = document.querySelector('.hero-split');
-          const story = document.querySelector('.our-story');
-          if (!hero || !story) return;
-
-          // Helper: easeOutCubic for natural feeling
-          function ease(t){ return 1 - Math.pow(1 - t, 3); }
-
-          let ticking = false;
-          function update(){
-            ticking = false;
-            // viewport metrics
-            const vh = window.innerHeight || document.documentElement.clientHeight;
-
-            // compute distance between hero bottom and story top
-            const heroRect = hero.getBoundingClientRect();
-            const storyRect = story.getBoundingClientRect();
-
-            // Start transition when story top enters bottom half of viewport
-            const start = vh * 0.55; // when story.top <= start, begin
-            const end = vh * 0.15;   // when story.top <= end, finish
-
-            let raw = (start - storyRect.top) / (start - end);
-            raw = Math.max(0, Math.min(1, raw));
-            const eased = ease(raw);
-
-            // update CSS variables (0..1)
-            hero.style.setProperty('--hero-progress', String(eased));
-            // only apply story progress when there's a visible transition to avoid hiding it on initial load
-            if (eased > 0.001) {
-              story.style.setProperty('--story-progress', String(eased));
-            } else {
-              // remove inline var so default visible styles remain
-              story.style.removeProperty('--story-progress');
-            }
-          }
-
-          function onScroll(){ if (!ticking) { ticking = true; requestAnimationFrame(update); } }
-
-          window.addEventListener('scroll', onScroll, { passive: true });
-          window.addEventListener('resize', onScroll);
-          // initial update
-          requestAnimationFrame(update);
-        });
-      </script>
 </section>

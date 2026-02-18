@@ -1,7 +1,7 @@
 ---
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '#products', label: 'Products' },
+  { href: '/products', label: 'Products' },
   { href: '#contact', label: 'Contact' },
 ];
 ---
@@ -31,7 +31,42 @@ const navItems = [
   </div>
 </nav>
 
-<!-- Small client-side script to toggle mobile menu -->
+<!-- Navbar stays sticky at top only during hero, fades when scrolling past -->
+<script>
+  (function(){
+    try{
+      const nav = document.querySelector('.site-nav');
+      if (!nav) return;
+
+      // Only show nav while hero is visible
+      window.addEventListener('scroll', function(){
+        const hero = document.querySelector('.hero-split');
+        if (!hero) return;
+
+        const heroRect = hero.getBoundingClientRect();
+        // If hero bottom is still visible, keep nav visible (opacity 1)
+        // Otherwise, fade it out (opacity 0)
+        if (heroRect.bottom > 0) {
+          nav.style.opacity = '1';
+          nav.style.pointerEvents = 'auto';
+        } else {
+          nav.style.opacity = '0';
+          nav.style.pointerEvents = 'none';
+        }
+      }, { passive: true });
+
+      // Initial check on load
+      const hero = document.querySelector('.hero-split');
+      if (hero) {
+        const heroRect = hero.getBoundingClientRect();
+        nav.style.opacity = heroRect.bottom > 0 ? '1' : '0';
+        nav.style.pointerEvents = heroRect.bottom > 0 ? 'auto' : 'none';
+      }
+    }catch(e){/* silent */}
+  })();
+</script>
+
+<!-- Mobile menu toggle -->
 <script>
   (function(){
     try{
@@ -44,52 +79,6 @@ const navItems = [
         btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         if (nav) nav.setAttribute('data-open', isOpen ? 'true' : 'false');
       });
-    }catch(e){/* silent */}
-  })();
-</script>
-
-<!-- Auto-hide navbar when pointer is idle -->
-<script>
-  (function(){
-    try{
-      const nav = document.querySelector('.site-nav');
-      if (!nav) return;
-      let idleTimer = null;
-      const IDLE_MS = 3000; // 3 seconds
-
-      function hideNav(){
-        nav.classList.add('nav-hidden');
-      }
-      function showNav(){
-        nav.classList.remove('nav-hidden');
-      }
-
-      function resetTimer(){
-        // do not hide when mobile menu is open
-        const wrapper = document.querySelector('.nav-wrapper');
-        if (wrapper && wrapper.classList.contains('open')) {
-          showNav();
-          if (idleTimer) clearTimeout(idleTimer);
-          return;
-        }
-        showNav();
-        if (idleTimer) clearTimeout(idleTimer);
-        idleTimer = setTimeout(hideNav, IDLE_MS);
-      }
-
-      // listen for pointer activity (covers mouse, touch, stylus)
-      ['pointermove','pointerdown','pointerup','mousemove','touchstart'].forEach(ev => {
-        window.addEventListener(ev, resetTimer, { passive: true });
-      });
-
-      // reveal nav on scroll as well (user expectation)
-      window.addEventListener('scroll', function(){
-        showNav();
-        resetTimer();
-      }, { passive: true });
-
-      // start the timer on load
-      resetTimer();
     }catch(e){/* silent */}
   })();
 </script>

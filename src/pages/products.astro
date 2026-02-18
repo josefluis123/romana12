@@ -1,0 +1,199 @@
+---
+import Navbar from '../components/Navbar.astro';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products - Romana</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Koulen&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <Navbar />
+    <main>
+      <section class="next-section">
+ 
+        <div class="brittle-info">
+          <img src="/next-section-image.png" alt="Brittle" class="brittle-featured-image" />
+          <div class="brittle-text">
+            <p><span class="brittle-lead">Romana's</span><br/><span class="brittle-sub">peanut brittle</span></p>
+            <p class="brittle-desc">Known for its thick, chunks studded with large, peanuts, offering a satisfying taste and buttery caramel flavor.</p>
+            <a class="btn-brittle" href="#products">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- falling items container (start off-screen inside this section) -->
+        <div id="falling-root" aria-hidden="true"></div>
+      </section>
+
+      <section class="featured-products">
+        <div class="container">
+          <h3>Featured Products</h3>
+          <div class="product-grid">
+            <a href="/product/chicha-pop" class="product-card product-link">
+              <img src="/products/chicha_pop.jpeg" alt="Chicha Pop" />
+              <div class="product-content">
+                <h4>Chicha Pop</h4>
+                <p>A crunchy sweet snack with a caramelized finish.</p>
+                <span class="btn-brittle">View Details</span>
+              </div>
+            </a>
+            <a href="/product/cocoa" class="product-card product-link">
+              <img src="/products/r_cocoa.jpeg" alt="Cocoa" />
+              <div class="product-content">
+                <h4>Cocoa</h4>
+                <p>Rich cocoa-infused brittle for chocolate lovers.</p>
+                <span class="btn-brittle">View Details</span>
+              </div>
+            </a>
+            <a href="/product/cashew-adobo" class="product-card product-link">
+              <img src="/products/cashew_adobo.jpeg" alt="Cashew Adobo" />
+              <div class="product-content">
+                <h4>Cashew Adobo</h4>
+                <p>Savory cashew snack inspired by adobo flavors.</p>
+                <span class="btn-brittle">View Details</span>
+              </div>
+            </a>
+            <a href="/product/peanut-butter-brittle" class="product-card product-link">
+              <img src="/products/peanut_butter_brittle.jpeg" alt="Peanut Butter Brittle" />
+              <div class="product-content">
+                <h4>Peanut Butter Brittle</h4>
+                <p>Creamy peanut butter meets crispy, crunchy brittle.</p>
+                <span class="btn-brittle">View Details</span>
+              </div>
+            </a>
+            <a href="/product/cashew-peanut-butter" class="product-card product-link">
+              <img src="/cashew_peanut_butter.jpeg" alt="Cashew Peanut Butter" />
+              <div class="product-content">
+                <h4>Cashew Peanut Butter</h4>
+                <p>A delicious blend of cashew and peanut butter brittle.</p>
+                <span class="btn-brittle">View Details</span>
+              </div>
+            </a>
+            <a href="/product/spanish-peanut-adobo" class="product-card product-link">
+              <img src="/products/spanish_peanut_adobo.jpeg" alt="Spanish Peanut Adobo" />
+              <div class="product-content">
+                <h4>Spanish Peanut Adobo</h4>
+                <p>Bold Spanish-inspired adobo flavors with roasted peanuts.</p>
+                <span class="btn-brittle">View Details</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const target = document.querySelector('.next-section');
+          const root = document.getElementById('falling-root');
+          if (!target || !root) return;
+
+          const images = ['/brittle1.png','/peanut1.png'];
+          const total = 26;
+          let created = false;
+          let createTimer = null;
+
+          function createBatch(batchSize, startIndex) {
+            let i = 0;
+            for (; i < batchSize && startIndex < total; i++, startIndex++) {
+              const el = document.createElement('img');
+              el.src = images[startIndex % images.length];
+              el.className = 'falling-item';
+              const left = Math.random() * 100; // percentage
+              const size = 36 + Math.random() * 120; // px
+              el.style.left = left + '%';
+              el.style.width = Math.max(36, size) + 'px';
+              el.style.pointerEvents = 'none';
+              const delay = Math.floor(Math.random() * 800);
+              const duration = 700 + Math.floor(Math.random() * 1200);
+              el.style.animationDelay = delay + 'ms';
+              el.style.animationDuration = duration + 'ms';
+              // when this element finishes falling, mark it as landed so it stays visible
+              el.addEventListener('animationend', (ev) => {
+                // only handle the fall animation
+                if (ev.animationName && ev.animationName.indexOf('fall') === -1) return;
+                el.classList.remove('fall');
+                el.classList.add('landed');
+                // ensure final visual state sticks
+                el.style.animation = 'none';
+                el.style.transform = 'translateY(0) rotate(0deg)';
+                el.style.opacity = '1';
+              });
+              // append then add class in next RAF to avoid layout thrash
+              root.appendChild(el);
+              requestAnimationFrame(() => el.classList.add('fall'));
+            }
+            return startIndex;
+          }
+
+          function createAllBatched(){
+            if (created) return;
+            created = true;
+            let createdCount = 0;
+            const batchSize = 5;
+            createTimer = setInterval(() => {
+              createdCount = createBatch(batchSize, createdCount);
+              if (createdCount >= total) {
+                clearInterval(createTimer);
+                createTimer = null;
+              }
+            }, 80);
+          }
+
+          function triggerFall(){
+            if (!created) {
+              createAllBatched();
+              return;
+            }
+            // restart animations only for items that haven't landed yet so
+            // already-landed pieces remain pinned after the first drop.
+            root.querySelectorAll('.falling-item:not(.landed)').forEach(el => {
+              el.classList.remove('fall');
+              el.style.animation = 'none';
+              // force a reflow/read to reset animation state
+              void el.offsetWidth;
+              // restore any inline animation properties (delay/duration) and re-add class on next frame
+              requestAnimationFrame(() => {
+                el.style.animation = '';
+                el.classList.add('fall');
+              });
+            });
+          }
+
+          function hideFall(){
+            // Intentionally noop so any in-flight items continue to their animationend
+            // and become `landed`. This ensures pieces stick after the first drop
+            // even if the user scrolls away before animations finish.
+          }
+
+          // track last scroll position/direction so we only trigger when
+          // the user is scrolling down into the section (not when scrolling up)
+          let lastScrollY = window.scrollY;
+          let lastScrollDir = null;
+          window.addEventListener('scroll', () => {
+            const y = window.scrollY;
+            if (y > lastScrollY) lastScrollDir = 'down';
+            else if (y < lastScrollY) lastScrollDir = 'up';
+            lastScrollY = y;
+          }, { passive: true });
+
+          const io = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                // Trigger fall when section comes into view
+                triggerFall();
+              } else {
+                hideFall();
+              }
+            });
+          }, { threshold: 0.5 });
+
+          io.observe(target);
+        });
+      </script>
+
+    </main>
+  </body>
+</html>
