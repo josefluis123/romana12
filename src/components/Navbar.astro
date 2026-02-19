@@ -1,8 +1,7 @@
 ---
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '/timeline', label: 'Our Heritage' },
-  { href: '#products', label: 'Products' },
+  { href: '/products', label: 'Products' },
   { href: '#contact', label: 'Contact' },
 ];
 ---
@@ -28,21 +27,46 @@ const navItems = [
       </ul>
     </div>
 
-    <div class="nav-actions" aria-hidden>
-      <!-- simple cart icon -->
-      <a class="cart" href="#" aria-label="Cart">
-        <!-- simpler filled cart icon to avoid outline/dashed effects -->
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-          <path d="M7 4h-2l-1 2h2l2.6 7.59-1.35 2.45A1 1 0 0 0 8.2 17h9.45a1 1 0 0 0 .92-.62L21 8H6.21" />
-          <circle cx="10" cy="20" r="1.25" />
-          <circle cx="18" cy="20" r="1.25" />
-        </svg>
-      </a>
-    </div>
+    
   </div>
 </nav>
 
-<!-- Small client-side script to toggle mobile menu -->
+<!-- Navbar stays sticky at top only during hero, fades when scrolling past -->
+<script>
+  (function(){
+    try{
+      const nav = document.querySelector('.site-nav');
+      if (!nav) return;
+
+      // Only show nav while hero is visible
+      window.addEventListener('scroll', function(){
+        const hero = document.querySelector('.hero-split');
+        if (!hero) return;
+
+        const heroRect = hero.getBoundingClientRect();
+        // If hero bottom is still visible, keep nav visible (opacity 1)
+        // Otherwise, fade it out (opacity 0)
+        if (heroRect.bottom > 0) {
+          nav.style.opacity = '1';
+          nav.style.pointerEvents = 'auto';
+        } else {
+          nav.style.opacity = '0';
+          nav.style.pointerEvents = 'none';
+        }
+      }, { passive: true });
+
+      // Initial check on load
+      const hero = document.querySelector('.hero-split');
+      if (hero) {
+        const heroRect = hero.getBoundingClientRect();
+        nav.style.opacity = heroRect.bottom > 0 ? '1' : '0';
+        nav.style.pointerEvents = heroRect.bottom > 0 ? 'auto' : 'none';
+      }
+    }catch(e){/* silent */}
+  })();
+</script>
+
+<!-- Mobile menu toggle -->
 <script>
   (function(){
     try{

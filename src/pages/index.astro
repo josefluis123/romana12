@@ -17,292 +17,39 @@ import HeroCarousel from '../components/HeroCarousel.astro';
     <Navbar />
     <main>
   <HeroCarousel />
-  <img src="/brittle1.png" class="split-image" alt="Brittle" />
-  <img src="/peanut1.png" class="split-image-right" alt="Peanut" />
-  <section class="next-section">
-    <div>
-      <h2>Products By</h2>
-      <img src="/logo.png" alt="Romana Logo" />
-    </div>
-    <div class="brittle-info">
-      <img src="/p_brittle.png" alt="Brittle" />
-      <div class="brittle-text">
-        <p><span class="brittle-lead">the Philippines’ first</span><br/><span class="brittle-sub">peanut brittle</span></p>
-        <p class="brittle-desc">Known for its thick, chunks studded with large, peanuts, offering a satisfying taste and buttery caramel flavor.</p>
-        <a class="btn-brittle" href="#products">Shop Now</a>
-      </div>
-    </div>
 
-    <!-- falling items container (start off-screen inside this section) -->
-    <div id="falling-root" aria-hidden="true"></div>
-  </section>
-
-  <section class="featured-products">
-    <div class="container">
-      <h3>Featured Products</h3>
-      <div class="product-viewport">
-        <div class="product-track">
-          <article class="product-card">
-            <img src="/products.png" alt="Classic Peanut Brittle" />
-            <h4>Classic Peanut Brittle</h4>
-            <p>Crunchy, caramel-coated peanuts in every bite.</p>
-            <a class="btn-brittle" href="#products">View</a>
-          </article>
-          <article class="product-card">
-            <img src="/brittle1.png" alt="Handmade Small Batches" />
-            <h4>Handmade Small Batches</h4>
-            <p>Carefully roasted peanuts, small-batch care.</p>
-            <a class="btn-brittle" href="#products">View</a>
-          </article>
-          <article class="product-card">
-            <img src="/peanut1.png" alt="Peanut Spread" />
-            <h4>Peanut Spread</h4>
-            <p>Rich, buttery peanut spread for toast and more.</p>
-            <a class="btn-brittle" href="#products">View</a>
-          </article>
-          <article class="product-card">
-            <img src="/products/peanut%20butter.png" alt="Peanut Butter" />
-            <h4>Peanut Butter</h4>
-            <p>Creamy, all-natural peanut butter made from roasted peanuts.</p>
-            <a class="btn-brittle" href="#products">View</a>
-          </article>
+      <section class="our-story">
+     
+        <div class="container">
+          <h3>Romana Devera</h3>
+          <div class="story-grid">
+            <p class="story-intro">HOW IT ALL BEGAN</p>
+            <div class="story-image">
+              <img src="/image%209.png" alt="Romana" />
+            </div>
+            <div class="story-text">
+              <p>What started as a small family recipe has grown into Romana — hand-crafted brittle and snacks made with simple ingredients and a lot of heart. We source quality peanuts and nuts, then cook them slowly to achieve the perfect crunch and caramelized flavor.</p>
+              <p>Our mission is to share those flavors with friends and neighbors while supporting local producers.</p>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod, nisl at convallis tincidunt, justo arcu cursus elit, id luctus nunc nisl sed orci. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec a facilisis lectus.</p>
+              <p>Curabitur sit amet nibh sed justo fermentum malesuada. Sed vitae mi sit amet urna pharetra gravida. Phasellus ut sem vitae augue faucibus gravida. Aliquam erat volutpat. Maecenas in dui sed urna consequat tincidunt.</p>
+              <!-- removed CTA as requested -->
+            </div>
+          </div>
         </div>
+      </section>
+
+    <section class="crafted-with-care">
+      <div class="brittle-info">
+        <div class="brittle-text">
+          <h2>Crafted with Care</h2>
+          <p class="brittle-desc">Every batch of Romana's peanut brittle is crafted with care and attention to quality. We start with the finest roasted peanuts, carefully selected for their superior flavor and crunch. Our traditional recipe combines these premium nuts with pure butter and caramelized sugar, cooked to perfection in small batches to ensure consistent quality and taste.</p>
+          <p class="brittle-desc"><strong>Made Fresh:</strong> We prepare our brittle in small quantities to guarantee freshness and quality. Each batch is hand-crafted using time-tested techniques passed down through generations of candy makers.</p>
+          <p class="brittle-desc"><strong>Delivered to Your Door:</strong> Once packaged with care, your order is prepared for delivery. We partner with trusted shipping carriers to ensure your peanut brittle arrives in perfect condition, ready to enjoy or share with loved ones.</p>
+          <a class="btn-brittle" href="/products">Explore Products</a>
+        </div>
+        <img src="/peanut-brittle.webp" alt="Peanut Brittle" class="brittle-featured-image" />
       </div>
-    </div>
-  </section>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const target = document.querySelector('.next-section');
-      const root = document.getElementById('falling-root');
-      if (!target || !root) return;
-
-      const images = ['/brittle1.png','/peanut1.png'];
-      const total = 26;
-      let created = false;
-      let createTimer = null;
-
-      function createBatch(batchSize, startIndex) {
-        let i = 0;
-        for (; i < batchSize && startIndex < total; i++, startIndex++) {
-          const el = document.createElement('img');
-          el.src = images[startIndex % images.length];
-          el.className = 'falling-item';
-          const left = Math.random() * 100; // percentage
-          const size = 36 + Math.random() * 120; // px
-          el.style.left = left + '%';
-          el.style.width = Math.max(36, size) + 'px';
-          el.style.pointerEvents = 'none';
-          const delay = Math.floor(Math.random() * 800);
-          const duration = 700 + Math.floor(Math.random() * 1200);
-          el.style.animationDelay = delay + 'ms';
-          el.style.animationDuration = duration + 'ms';
-          // when this element finishes falling, mark it as landed so it stays visible
-          el.addEventListener('animationend', (ev) => {
-            // only handle the fall animation
-            if (ev.animationName && ev.animationName.indexOf('fall') === -1) return;
-            el.classList.remove('fall');
-            el.classList.add('landed');
-            // ensure final visual state sticks
-            el.style.animation = 'none';
-            el.style.transform = 'translateY(0) rotate(0deg)';
-            el.style.opacity = '1';
-          });
-          // append then add class in next RAF to avoid layout thrash
-          root.appendChild(el);
-          requestAnimationFrame(() => el.classList.add('fall'));
-        }
-        return startIndex;
-      }
-
-      function createAllBatched(){
-        if (created) return;
-        created = true;
-        let createdCount = 0;
-        const batchSize = 5;
-        createTimer = setInterval(() => {
-          createdCount = createBatch(batchSize, createdCount);
-          if (createdCount >= total) {
-            clearInterval(createTimer);
-            createTimer = null;
-          }
-        }, 80);
-      }
-
-      function triggerFall(){
-        if (!created) {
-          createAllBatched();
-          return;
-        }
-        // restart animations only for items that haven't landed yet so
-        // already-landed pieces remain pinned after the first drop.
-        root.querySelectorAll('.falling-item:not(.landed)').forEach(el => {
-          el.classList.remove('fall');
-          el.style.animation = 'none';
-          // force a reflow/read to reset animation state
-          void el.offsetWidth;
-          // restore any inline animation properties (delay/duration) and re-add class on next frame
-          requestAnimationFrame(() => {
-            el.style.animation = '';
-            el.classList.add('fall');
-          });
-        });
-      }
-
-      function hideFall(){
-        // Intentionally noop so any in-flight items continue to their animationend
-        // and become `landed`. This ensures pieces stick after the first drop
-        // even if the user scrolls away before animations finish.
-      }
-
-      // track last scroll position/direction so we only trigger when
-      // the user is scrolling down into the section (not when scrolling up)
-      let lastScrollY = window.scrollY;
-      let lastScrollDir = null;
-      window.addEventListener('scroll', () => {
-        const y = window.scrollY;
-        if (y > lastScrollY) lastScrollDir = 'down';
-        else if (y < lastScrollY) lastScrollDir = 'up';
-        lastScrollY = y;
-      }, { passive: true });
-
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            // only start the fall when the user scrolled down into view
-            if (lastScrollDir === 'down') {
-              triggerFall();
-            }
-          } else {
-            hideFall();
-          }
-        });
-      }, { threshold: 0.5 });
-
-      io.observe(target);
-    });
-  </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const viewport = document.querySelector('.product-viewport');
-      const track = document.querySelector('.product-track');
-      if (!viewport || !track) return;
-
-      const originals = Array.from(track.children);
-      const originalsLen = originals.length;
-      if (originalsLen === 0) return;
-
-      // clone nodes before and after
-      const clonesBefore = originals.map(node => node.cloneNode(true));
-      const clonesAfter = originals.map(node => node.cloneNode(true));
-
-      // append/prepend clones
-      clonesBefore.reverse().forEach(n => track.insertBefore(n, track.firstChild));
-      clonesAfter.forEach(n => track.appendChild(n));
-
-      // all cards reference
-      const cards = Array.from(track.children);
-
-      // ensure layout styles
-      track.style.display = 'flex';
-      track.style.gap = '1.25rem';
-      track.style.transition = 'transform 600ms ease';
-
-      // helpers
-      function cardStep(){
-        const rect = cards[0].getBoundingClientRect();
-        const style = getComputedStyle(cards[0]);
-        const marginRight = parseFloat(style.marginRight) || 0;
-        return rect.width + marginRight;
-      }
-
-      let index = originalsLen; // start at the first original
-      let isAnimating = false; // lock while animating
-
-      function setInstant(i){
-        track.style.transition = 'none';
-        track.style.transform = `translateX(-${i * cardStep()}px)`;
-        // force reflow then re-enable transition
-        void track.offsetWidth;
-        track.style.transition = 'transform 600ms ease';
-      }
-
-      function slideTo(i){
-        if (isAnimating) return; // ignore rapid clicks
-        isAnimating = true;
-        track.style.transform = `translateX(-${i * cardStep()}px)`;
-        index = i;
-      }
-
-      // initial position
-      setInstant(index);
-
-      // next/prev with snapping
-      function next(){ slideTo(index + 1); }
-      function prev(){ slideTo(index - 1); }
-
-      // controls
-      const btnPrev = document.createElement('button');
-      btnPrev.className = 'product-prev';
-      btnPrev.setAttribute('aria-label', 'Previous product');
-      btnPrev.textContent = '‹';
-
-      const btnNext = document.createElement('button');
-      btnNext.className = 'product-next';
-      btnNext.setAttribute('aria-label', 'Next product');
-      btnNext.textContent = '›';
-
-      viewport.parentElement.style.position = 'relative';
-      viewport.parentElement.insertBefore(btnPrev, viewport);
-      viewport.parentElement.appendChild(btnNext);
-
-      btnPrev.addEventListener('click', prev);
-      btnNext.addEventListener('click', next);
-
-      // when transition ends, detect if we're in a cloned area and snap back
-      track.addEventListener('transitionend', (e) => {
-        // only handle transform transitions
-        if (e.propertyName !== 'transform') return;
-
-        // if moved past the originals on the right
-        if (index >= originalsLen * 2) {
-          index = originalsLen;
-          setInstant(index);
-          // small timeout to ensure setInstant applied before unlocking
-          setTimeout(() => { isAnimating = false; }, 20);
-          return;
-        }
-        // if moved before the originals on the left
-        if (index < originalsLen) {
-          index = index + originalsLen;
-          setInstant(index);
-          setTimeout(() => { isAnimating = false; }, 20);
-          return;
-        }
-
-        // normal end of slide
-        isAnimating = false;
-      });
-
-      // resize handling
-      let resizeTimer;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        // wait for layout to settle
-        resizeTimer = setTimeout(() => setInstant(index), 120);
-      });
-
-      // optional: keyboard navigation
-      viewport.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') prev();
-        if (e.key === 'ArrowRight') next();
-      });
-
-      // make viewport focusable for keyboard control
-      viewport.setAttribute('tabindex', '0');
-    });
-  </script>
+    </section>
 
     </main>
   </body>
