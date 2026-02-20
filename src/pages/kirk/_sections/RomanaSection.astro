@@ -1,0 +1,33 @@
+---
+const TITLE = "ROMANA DEVERA"
+const SUBTITLE = "HOW IT ALL BEGAN"
+const IMAGE_URL = "/kirk/romana.png"
+// Per-paragraph text for the Romana section
+const DESCRIPTION_TEXT = [
+  "What started as a small family recipe has grown into Romana — hand-crafted brittle and snacks made with simple ingredients and a lot of heart. We source quality peanuts and nuts, then cook them slowly to achieve the perfect crunch and caramelized flavor.", 
+  "Our mission is to share those flavors with friends and neighbors while supporting local producers.",
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod, nisl at convallis tincidunt, justo arcu cursus elit, id luctus nunc nisl sed orci. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec a facilisis lectus.",
+  "Curabitur sit amet nibh sed justo fermentum malesuada. Sed vitae mi sit amet urna pharetra gravida. Phasellus ut sem vitae augue faucibus gravida. Aliquam erat volutpat. Maecenas in dui sed urna consequat tincidunt.",
+]
+---
+
+<div class="h-auto flex flex-col items-center w-full bg-white p-12">
+  <h1 class="text-3xl">{TITLE}</h1>
+  <p class="-mt-4 text-sm">{SUBTITLE}</p>
+
+  <div class="flex flex-col items-center md:flex-row md:gap-12">
+    <div class="md:flex-1 md:h-auto h-70 w-70 rounded-full overflow-hidden shadow-xl">
+      <img 
+        src={IMAGE_URL}
+        alt="Product Image"
+        class="block w-full h-full object-fill" 
+      /> 
+    </div>
+
+    <div class="flex-1">
+      {DESCRIPTION_TEXT.map((paragraph) => (
+        <p class="mt-4 max-w-2xl text-left lg:text-lg md:text-md text-sm">{paragraph}</p>
+      ))}
+    </div>
+  </div>
+</div>
