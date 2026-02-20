@@ -1,6 +1,48 @@
 ---
 const SECTION_TITLE = "CRAFTED WITH CARE"
-const IMAGE_URL = ""
+const SUBTITLE = "Every batch of Romana's peanut brittle is crafted with care and attention to quality. We start with the finest roasted peanuts, carefully selected for their superior flavor and crunch. Our traditional recipe combines these premium nuts with pure butter and caramelized sugar, cooked to perfection in small batches to ensure consistent quality and taste."
+const IMAGE_URL = "/kirk/peanut-brittle.webp"
+const FEATURES = [
+  {
+    bold: "Made Fresh: ", 
+    text: "We prepare our brittle in small quantities to guarantee freshness and quality. Each batch is hand-crafted using time-tested techniques passed down through generations of candy makers."
+  },
+  {
+    bold: "Delivered to Your Door: ", 
+    text: "Once packaged with care, your order is prepared for delivery. We partner with trusted shipping carriers to ensure your peanut brittle arrives in perfect condition, ready to enjoy or share with loved ones."
+  },
+]
 ---
 
-<div class="h-auto w-full p-12"></div>
+<div class="h-auto w-full lg:px-0 lg:py-12 py-6 px-12 max-w-5xl mx-auto">
+  <div class="flex flex-col md:flex-row md:gap-24">
+    <!-- Text -->
+    <div class="flex flex-1 flex-col items-start">
+      <!-- Image for small screen -->
+
+      <h1 class="text-5xl">{SECTION_TITLE}</h1>
+
+      <div class="w-full h-60 md:h-70 overflow-hidden rounded-xl lg:hidden mb-6 -mt-4">
+        <img 
+          src={IMAGE_URL}
+          class="w-full h-full object-cover object-center" 
+        />
+      </div>
+
+      <p class="">{SUBTITLE}</p>
+      {FEATURES.map((feature) => (
+        <p><span class="font-bold">{feature.bold}</span>{feature.text}</p>
+      ))}
+      <!-- Consider turning into component, depende kung gagamitin uli -->
+      <button class="bg-[#D57B00] px-6 py-3 rounded-full text-white mx-auto md:mx-0">Explore Products</button>
+    </div>
+
+    <!-- Image for large screen -->
+    <div class="flex-1 aspect-square overflow-hidden rounded-xl hidden lg:block">
+      <img 
+        src={IMAGE_URL}
+        class="w-full h-full object-cover" 
+      />
+    </div>
+  </div>
+</div>
