@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --font-koulen: "Koulen", cursive;
+  --font-gill: "Cabin", sans-serif;
+}
+
+@layer base {
+  /* Reset and Base Scale */
+  body {
+    @apply font-gill antialiased;
+    @apply text-[16px] md:text-[18px] leading-relaxed;
+  }
+
+  /* Koulan Display Headers - Purely Scale and Weight */
+  h1 {
+    @apply font-koulen uppercase tracking-wider;
+    @apply text-4xl md:text-6xl lg:text-7xl leading-[1.1] mb-6;
+  }
+
+  h2 {
+    @apply font-koulen uppercase tracking-wide;
+    @apply text-3xl md:text-5xl leading-tight mb-5 mt-10;
+  }
+
+  h3 {
+    @apply font-koulen uppercase tracking-normal;
+    @apply text-2xl md:text-3xl leading-snug mb-4 mt-8;
+  }
+
+  /* Body Hierarchy Headers (Gill Sans) */
+  h4 {
+    @apply font-gill font-bold;
+    @apply text-xl md:text-2xl mb-3;
+  }
+
+  h5 {
+    @apply font-gill font-semibold uppercase tracking-widest;
+    @apply text-sm md:text-base mb-2;
+  }
+
+  h6 {
+    @apply font-gill font-bold italic;
+    @apply text-base mb-2;
+  }
+
+  /* Paragraphs and Spacing */
+  p {
+    @apply mb-5 max-w-[65ch];
+  }
+
+  strong {
+    @apply font-bold;
+  }
+}

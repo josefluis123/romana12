@@ -1,0 +1,52 @@
+---
+const HERO_IMAGES = [
+  '/kirk/hero-bg-1.png',
+  '/kirk/hero-bg-2.png',
+  '/kirk/hero-bg-3.png',
+]
+---
+
+<div data-hero-section class="relative flex flex-col items-start justify-end p-8 w-full h-screen overflow-hidden">
+  
+  <div class="absolute inset-0 z-0">
+    {HERO_IMAGES.map((src, index) => (
+      <div 
+        class={`hero-slide absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
+        style={`background-image: url('${src}')`}
+      ></div>
+    ))}
+    <div class="absolute inset-0 bg-black/30"></div>
+  </div>
+
+  <div class="relative z-10">
+    <h1 class="text-white text-5xl shadow-lg">THE ORIGINAL PHILIPPINE PEANUT BRITTLE</h1>
+    <p class="text-white text-2xl italic">Classic Recipe since 1956</p>
+  </div>
+</div>
+
+<script>
+  // 2. Find ALL instances of this component on the page
+  const heroSections = document.querySelectorAll('[data-hero-section]');
+
+  heroSections.forEach((section) => {
+    // 3. Scope the search to JUST this specific section
+    const slides = section.querySelectorAll('.hero-slide');
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    if (totalSlides <= 1) return; // Don't run if there's only one image
+
+    function transitionSlides() {
+      // Hide current
+      slides[currentIndex].classList.replace('opacity-100', 'opacity-0');
+      
+      // Increment
+      currentIndex = (currentIndex + 1) % totalSlides;
+
+      // Show next
+      slides[currentIndex].classList.replace('opacity-0', 'opacity-100');
+    }
+
+    setInterval(transitionSlides, 3000);
+  });
+</script>
